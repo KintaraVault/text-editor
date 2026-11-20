@@ -14,5 +14,5 @@ void addEditorColors(ColorMixer &mixer, const Theme &theme)
 
     mixer[EditorColor::FloatingCardShadow] = Color{0, 0, 0, 255}.withAlpha(dark ? 0.35 : 0.16);
     mixer[EditorColor::FloatingCardBorder] = withAlpha(ColorId::Text, dark ? 0.12 : 0.08);
-    mixer[EditorColor::WindowBackground] = SyntaxTheme::windowBackground(dark);
+    mixer[EditorColor::WindowBackground] = wallpaperTinted(SyntaxTheme::windowBackground(dark));
 }

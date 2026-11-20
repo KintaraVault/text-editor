@@ -19,6 +19,7 @@
 #include "ui/progress_bar.h"
 #include "ui/cell_layout.h"
 #include "ui/theme.h"
+#include "ui/toolbar_surface.h"
 #include "ui/window.h"
 
 #include <cmath>
@@ -44,6 +45,24 @@ bool CardField::keyPress(const KeyEvent &event)
         return true;
     }
     return TextField::keyPress(event);
+}
+
+CardField::CardField(bool search)
+    : m_search(search)
+{
+    if (search)
+        setFrameVisible(false);
+}
+
+void CardField::paint(Painter &painter)
+{
+    if (m_search) {
+        const auto &theme = Theme::current();
+        toolbar_surface::searchField(painter, localRect(), theme.darkMode);
+        if (hasFocus())
+            toolbar_surface::searchFocus(painter, localRect(), theme.highlight);
+    }
+    TextField::paint(painter);
 }
 
 // Vertically centred in a row, at whole-pixel positions.
@@ -409,7 +428,7 @@ void InfoBar::paint(Painter &painter)
 FindBar::FindBar(EditorPage &page)
     : m_page(page)
     , m_disclosure(addChild<RoundButton>(28))
-    , m_field(addChild<CardField>())
+    , m_field(addChild<CardField>(true))
     , m_count(addChild<Label>())
 {
     setName("findBar");

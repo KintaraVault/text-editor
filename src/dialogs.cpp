@@ -151,7 +151,7 @@ void SaveChangesDialog::ask(const std::vector<EditorPage *> &pages, std::functio
     m_action = std::move(then);
 
     m_window = std::make_unique<Window>();
-    m_window->setBackgroundColor(ColorId::SecondBackground);
+    m_window->setBackgroundColor(ColorId::PanelBackground);
     m_window->setTransientParent(m_parent, true);
     m_window->onCloseRequested = [this] { finish(false); };
     buildContent();
