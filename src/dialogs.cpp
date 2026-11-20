@@ -53,8 +53,8 @@ public:
         : m_column(addChild<Column>())
         , m_header(addChild<WindowHeader>(44))
     {
-        m_column->setMargins({16, 16, 16, 12});
-        m_column->setSpacing(16);
+        m_column->setMargins(Margins::all(design::dialogInset));
+        m_column->setSpacing(14);
 
         auto *texts = m_column->addChild<Column>();
         texts->setSpacing(4);
@@ -65,7 +65,7 @@ public:
         titleLabel->setWrap(true);
         titleLabel->setLayoutHints({.fillWidth = true});
         Label *text = texts->addChild<Label>(tr("If you don't save, your changes will be lost."));
-        text->setFontSize(14);
+        text->setFontSize(13);
         text->setColor(ColorId::DisabledText);
         text->setWrap(true);
         text->setLayoutHints({.fillWidth = true});
@@ -154,9 +154,10 @@ void SaveChangesDialog::ask(const std::vector<EditorPage *> &pages, std::functio
                 saveChecked();
         });
     }
-    m_window->resize({380, 0});
-    m_window->setMinimumSize({380, 0});
-    m_window->setMaximumSize({380, 16777215});
+    constexpr int width = 390;
+    m_window->resize({width, 0});
+    m_window->setMinimumSize({width, 0});
+    m_window->setMaximumSize({width, 16777215});
     m_window->setFitsContentHeight(true);
     m_window->show();
 }
@@ -214,8 +215,9 @@ void SaveChangesDialog::saveChecked()
     auto queue = std::make_shared<std::vector<TrackedPage>>();
     for (EditorPage *page : m_checked)
         queue->emplace_back(page, lifetimeOf(page));
-    if (m_window)
-        m_window->hide();
+    // Native dialogs are unmapped by destroying the window. Close it before
+    // another modal (Save As) opens or a failed save returns to the editor.
+    release();
     // Only the save waiting to finish holds the chain; it holds itself weakly.
     auto next = std::make_shared<std::function<void()>>();
     const std::weak_ptr<std::function<void()>> self = next;
@@ -237,9 +239,13 @@ void SaveChangesDialog::saveChecked()
                 (*again)();
             return;
         }
-        onSaveRequested(page, [next = self.lock()](bool saved) {
+        onSaveRequested(page, [this, next = self.lock(), alive](bool saved) {
+            if (alive.expired())
+                return;
             if (saved)
                 (*next)();
+            else
+                finish(false);
         });
     };
     (*next)();

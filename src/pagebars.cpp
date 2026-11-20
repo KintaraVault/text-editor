@@ -418,8 +418,7 @@ FindBar::FindBar(EditorPage &page)
     , m_count(addChild<Label>())
 {
     setName("findBar");
-    // Concentric with the fields inside; too small a card for continuous corners.
-    setRadius(Theme::current().smallRadius + padding);
+    setRadius(design::popoverRadius);
     setVisible(false);
 
     m_disclosure->setName("replaceToggle");
@@ -711,7 +710,7 @@ GoToLineBar::GoToLineBar(EditorPage &page)
     , m_close(addChild<RoundButton>(28))
 {
     setName("goToLineBar");
-    setRadius(Theme::current().smallRadius + padding);
+    setRadius(design::popoverRadius);
     setVisible(false);
     m_field->setName("goToLineField");
     m_field->setValidator([](const std::string &text) {
