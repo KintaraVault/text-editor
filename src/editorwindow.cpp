@@ -82,6 +82,7 @@ public:
         setName("headerContent");
         tabBar->setName("tabBar");
         newTab->setName("newTabButton");
+        newTab->setToolbarAppearance(true);
         newTab->setToolTip({});
     }
 

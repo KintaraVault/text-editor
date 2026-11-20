@@ -29,11 +29,17 @@ class EditorPage;
 class CardField : public cutefish::ui::TextField
 {
 public:
+    explicit CardField(bool search = false);
+
     std::function<void(bool shift)> onReturn;
     std::function<void()> onEscape;
 
 protected:
     bool keyPress(const cutefish::ui::KeyEvent &event) override;
+    void paint(cutefish::ui::Painter &painter) override;
+
+private:
+    bool m_search;
 };
 
 // One line under the text: where the cursor is, and the document's
